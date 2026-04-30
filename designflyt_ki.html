@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Designprosess og KI-potensial</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f5f3ef;
+    color: #1a1a18;
+    min-height: 100vh;
+  }
+
+  header {
+    background: #1a1a18;
+    color: #f5f3ef;
+    padding: 24px 40px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  header h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
+  header p  { font-size: 12px; color: #888; margin-top: 3px; }
+
+  .legend {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-left: auto;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11.5px;
+    color: #ccc;
+  }
+
+  .legend-box { width: 26px; height: 16px; border-radius: 4px; flex-shrink: 0; }
+  .legend-box.replace { border: 3px solid #d42020; background: transparent; }
+  .legend-box.partial { border: 2px dashed #d42020; background: transparent; }
+  .legend-box.human   { border: 1.5px solid #555; background: transparent; }
+
+  .scroll-wrapper {
+    overflow-x: auto;
+    padding: 28px 40px 48px;
+  }
+
+  /* 9 columns: label + 7 phases + 1 post-launch */
+  .grid {
+    display: grid;
+    grid-template-columns: 140px repeat(7, 168px);
+    gap: 0;
+    min-width: 1320px;
+  }
+
+  .phase-header {
+    color: #f5f3ef;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px;
+    text-align: center;
+    line-height: 1.5;
+    height: 44px;
+  }
+
+  .phase-header span { font-weight: 400; opacity: .65; font-size: 10px; letter-spacing: 0; text-transform: none; }
+  .phase-header.empty { background: #1a1a18; }
+  .phase-header.utforsk { background: #2d2060; }
+  .phase-header.definer { background: #0f5c47; }
+  .phase-header.ideer   { background: #7a2818; }
+  .phase-header.design  { background: #0c3d70; border-left: 2px solid #4a9fe0; border-right: 2px solid #4a9fe0; }
+  .phase-header.bygg    { background: #3a3200; }
+  .phase-header.test    { background: #5a1a00; }
+  .phase-header.lansert { background: #222; }
+
+  /* Row label */
+  .lane-label {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    padding: 14px 12px 14px 6px;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: #333;
+    letter-spacing: 0.01em;
+    text-align: right;
+    border-right: 2px solid #1a1a18;
+    border-bottom: 1px solid #d8d5cf;
+    background: #ede9e3;
+    line-height: 1.4;
+  }
+
+  .lane-label .role-tag {
+    font-size: 9.5px;
+    font-weight: 500;
+    margin-top: 3px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    align-self: flex-end;
+  }
+
+  /* Cells */
+  .cell {
+    padding: 12px 10px;
+    border-right: 1px solid #d8d5cf;
+    border-bottom: 1px solid #d8d5cf;
+    background: #f5f3ef;
+    min-height: 108px;
+    position: relative;
+  }
+
+  .cell.proto { background: #eef4fb; border-left: 2px solid #4a9fe0; border-right: 2px solid #4a9fe0; }
+  .cell.empty { background: repeating-linear-gradient(45deg, transparent, transparent 7px, rgba(0,0,0,0.025) 7px, rgba(0,0,0,0.025) 14px); }
+  .cell.empty.proto { background: repeating-linear-gradient(45deg, #eef4fb, #eef4fb 7px, #e4eef8 7px, #e4eef8 14px); }
+
+  /* Alternating row tint — applied via JS */
+  .row-tint .cell:not(.proto)       { background: #eeebe5; }
+  .row-tint .cell.empty:not(.proto) { background: repeating-linear-gradient(45deg, #eeebe5, #eeebe5 7px, #e6e3dd 7px, #e6e3dd 14px); }
+  .row-tint .lane-label             { background: #e5e1db; }
+
+  /* Activity card */
+  .activity {
+    border-radius: 5px;
+    padding: 9px 10px 10px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .activity h3 { font-size: 12px; font-weight: 600; line-height: 1.35; }
+  .activity p  { font-size: 11px; line-height: 1.45; opacity: .72; }
+
+  .ai-note {
+    margin-top: auto;
+    padding-top: 6px;
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    font-weight: 500;
+    color: #b81818;
+    line-height: 1.45;
+    border-top: 1px solid rgba(180,24,24,.18);
+  }
+
+  .human-note {
+    margin-top: auto;
+    padding-top: 6px;
+    font-size: 10px;
+    font-family: 'DM Mono', monospace;
+    color: #777;
+    border-top: 1px solid #ddd;
+    line-height: 1.4;
+  }
+
+  /* Role colour fills */
+  .r-po       { background: #ede9fc; color: #2d1f6e; }
+  .r-ux       { background: #d8f5ec; color: #0a3d2c; }
+  .r-fe       { background: #e0f0ff; color: #0a2d50; }
+  .r-fag      { background: #fce8e2; color: #6b1e0e; }
+  .r-user     { background: #e8e8e6; color: #2a2a28; }
+  .r-be       { background: #dceefb; color: #0c2d4a; }
+  .r-qa       { background: #fef0d6; color: #4a2c00; }
+
+  /* Role tag colours */
+  .tag-po  { background: #534AB7; color: #fff; }
+  .tag-ux  { background: #0f6e56; color: #fff; }
+  .tag-fe  { background: #185FA5; color: #fff; }
+  .tag-fag { background: #993C1D; color: #fff; }
+  .tag-user{ background: #666; color: #fff; }
+  .tag-be  { background: #0c447c; color: #fff; }
+  .tag-qa  { background: #854F0B; color: #fff; }
+
+  /* KI borders */
+  .ki-replace {
+    outline: 3px solid #d42020;
+    outline-offset: -1px;
+  }
+  .ki-replace::before {
+    content: 'KI erstatter';
+    position: absolute;
+    top: -9px; right: 6px;
+    font-size: 9px; font-weight: 700;
+    background: #d42020; color: #fff;
+    padding: 1px 6px; border-radius: 8px;
+    letter-spacing: 0.05em;
+    font-family: 'DM Mono', monospace;
+  }
+
+  .ki-partial {
+    outline: 2px dashed #d42020;
+    outline-offset: -1px;
+  }
+  .ki-partial::before {
+    content: 'KI effektiviserer';
+    position: absolute;
+    top: -9px; right: 6px;
+    font-size: 9px; font-weight: 600;
+    background: #fff0f0; color: #b01818;
+    padding: 1px 6px; border-radius: 8px;
+    letter-spacing: 0.04em;
+    font-family: 'DM Mono', monospace;
+    border: 1px dashed #d42020;
+  }
+
+  .proto-label {
+    text-align: center;
+    font-size: 10px;
+    color: #185FA5;
+    font-family: 'DM Mono', monospace;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    padding: 6px 0 0;
+    min-width: 1320px;
+  }
+
+  .footer {
+    padding: 0 40px 40px;
+    font-size: 12px;
+    color: #777;
+    max-width: 980px;
+    line-height: 1.8;
+  }
+  .footer strong { color: #333; }
+
+  .scroll-wrapper::-webkit-scrollbar { height: 6px; }
+  .scroll-wrapper::-webkit-scrollbar-track { background: #e0ddd7; border-radius: 3px; }
+  .scroll-wrapper::-webkit-scrollbar-thumb { background: #aaa; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Designprosess og KI-potensial</h1>
+    <p>Tverrfaglig team · 7 roller · Husbanken-kontekst</p>
+  </div>
+  <div class="legend">
+    <div class="legend-item"><div class="legend-box replace"></div><span>KI kan erstatte</span></div>
+    <div class="legend-item"><div class="legend-box partial"></div><span>KI effektiviserer delvis</span></div>
+    <div class="legend-item"><div class="legend-box human"></div><span>Menneske nødvendig</span></div>
+  </div>
+</header>
+
+<div class="scroll-wrapper">
+<div class="grid">
+
+  <!-- Phase headers -->
+  <div class="phase-header empty"></div>
+  <div class="phase-header utforsk">Utforsk<span>Uke 1</span></div>
+  <div class="phase-header definer">Definer<span>Uke 2–3</span></div>
+  <div class="phase-header ideer">Ideer<span>Uke 4</span></div>
+  <div class="phase-header design">Design + prototype ★<span>Uke 5–6</span></div>
+  <div class="phase-header bygg">Bygg<span>Uke 7–9</span></div>
+  <div class="phase-header test">Test og lever<span>Uke 10–11</span></div>
+  <div class="phase-header lansert">Lansering<span>Uke 12+</span></div>
+
+  <!-- ═══ PRODUKTEIER ═══ -->
+  <div class="lane-label">
+    Produkteier
+    <span class="role-tag tag-po">PO</span>
+  </div>
+  <div class="cell">
+    <div class="activity r-po ki-partial">
+      <h3>Brief og mandat</h3>
+      <p>Mål, rammer, OKR, budsjett</p>
+      <div class="ai-note">↳ KI: utkast til brief og OKR-forslag</div>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="activity r-po ki-partial">
+      <h3>Prioritering</h3>
+      <p>Backlog, roadmap</p>
+      <div class="ai-note">↳ KI: oppsummerer og rangerer</div>
+    </div>
+  </div>
+  <div class="cell empty"></div>
+  <div class="cell proto">
+    <div class="activity r-po ki-partial">
+      <h3>Konseptvalg</h3>
+      <p>Godkjenner retning og scope</p>
+      <div class="ai-note">↳ KI: oppsummerer alternativer</div>
+    </div>
+  </div>
+  <div class="cell empty"></div>
+  <div class="cell empty"></div>
+  <div class="cell">
+    <div class="activity r-po">
+      <h3>Akseptansetest</h3>
+      <p>Sluttgodkjenning og lansering</p>
+      <div class="human-note">Menneske nødvendig</div>
+    </div>
+  </div>
+
+  <!-- ═══ UX-DESIGNER ═══ -->
+  <div class="lane-label">
+    UX-designer
+    <span class="role-tag tag-ux">UX</span>
+  </div>
+  <div class="cell">
+    <div class="activity r-ux ki-partial">
+      <h3>Brukerinnsikt</h3>
+      <p>Intervjuer, observasjon, desk research</p>
+      <div class="ai-note">↳ KI: transkriberer og koder funn</div>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="activity r-ux ki-replace">
+      <h3>Syntese</h3>
+      <p>Affinitetsmap, personas, HMW-spørsmål</p>
+      <div class="ai-note">↳ KI erstatter: genererer personas og HMW fra rådata</div>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="activity r-ux ki-partial">
+      <h3>Lav-fi skisser</h3>
+      <p>Wireframes, brukerflyt, konsepter</p>
+      <div class="ai-note">↳ KI: idéforslag, v0, Figma AI</div>
+    </div>
+  </div>
+  <div class="cell proto">
+    <div class="activity r-ux ki-partial">
+      <h3>Prototype ★</h3>
+      <p>Interaktiv mockup, brukerflyt, navigasjon</p>
+      <div class="ai-note">↳ KI: komponentforslag, variantgenerering</div>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="activity r-ux ki-partial">
+      <h3>Støtte under bygg</h3>
+      <p>Avklarer designintent</p>
+      <div class="ai-note">↳ KI: dokumentasjonshjep, tokens</div>
+    </div>
+  </div>
+  <div class="cell empty"></div>
+  <div class="cell empty"></div>
+
+  <!-- ═══ FRONTEND-DESIGNER ═══ -->
+  <div class="lane-label">
+    Frontend-designer
+    <span class="role-tag tag-fe">FE Design</span>
+  </div>
+  <div class="cell empty"></div>
+  <div class="cell empty"></div>
+  <div class="cell">
+    <div class="activity r-fe ki-partial">
+      <h3>Komponentbibliotek</h3>
+      <p>Designsystem, tokens, stiler</p>
+      <div class="ai-note">↳ KI: Figma AI, token-generering</div>
+    </div>
+  </div>
+  <div class="cell proto">
+    <div class="activity r-fe ki-partial">
+      <h3>Hi-fi visuelt design ★</h3>
+      <p>Farger, typografi, layout, responsivt</p>
+      <div class="ai-note">↳ KI: stilforslag, layout-varianter, tilgjengelighetsjekk</div>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="activity r-fe ki-replace">
+      <h3>Frontend-kode</h3>
+      <p>HTML/CSS, komponenter, animasjoner</p>
+      <div class="ai-note">↳ KI erstatter: genererer komponentkode fra designspec</div>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="activity r-fe ki-partial">
+      <h3>UI-review</h3>
+      <p>Visuell QA, pikselperfekt sjekk</p>
+      <div class="ai-note">↳ KI: automatisk diff mot designfil</div>
+    </div>
+  </div>
+  <div class="cell empty"></div>
+
+  <!-- ═══ FAGPERSON ═══ -->
+  <div class="lane-label">
+    Fagperson
+    <span class="role-tag tag-fag">Fag</span>
+  </div>
+  <div class="cell">
+    <div class="activity r-fag">
+      <h3>Faglig kontekst</h3>
+      <p>Regelverk, fagressurser, domeneforståelse</p>
+      <div class="human-note">Menneske nødvendig — kontekstuell ekspertise</div>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="activity r-fag ki-partial">
+      <h3>Kravspesifikasjon</h3>
+      <p>Funksjonelle krav, lovkrav, UU</p>
+      <div class="ai-note">↳ KI: strukturerer og sjekker mot regelverk</div>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="activity r-fag ki-partial">
+      <h3>Faglig innhold</h3>
+      <p>Tekster, veiledninger, brukerstøtte-innhold</p>
+      <div class="ai-note">↳ KI: utkast til faginnhold, forenkling av språk</div>
+    </div>
+  </div>
+  <div class="cell proto">
+    <div class="activity r-fag ki-replace">
+      <h3>Innhold til prototype ★</h3>
+      <p>UX-tekst, labels, feilmeldinger, hjelptekster</p>
+      <div class="ai-note">↳ KI erstatter: genererer og varierer mikrotekst og UX-kopi</div>
+    </div>
+  </div>
+  <div class="cell empty"></div>
+  <div class="cell">
+    <div class="activity r-fag ki-partial">
+      <h3>Innholds-QA</h3>
+      <p>Faglig korrekthet, tone, lovkrav</p>
+      <div class="ai-note">↳ KI: konsistens- og lovsjekk, klarspråk</div>
+    </div>
+  </div>
+  <div class="cell empty"></div>
+
+  <!-- ═══ BRUKER ═══ -->
+  <div class="lane-label">
+    Bruker
+    <span class="role-tag tag-user">Bruker</span>
+  </div>
+  <div class="cell">
+    <div class="activity r-user">
+      <h3>Innsiktsintervju</h3>
+      <p>Forskningsdeltaker, kontekstuell observasjon</p>
+      <div class="human-note">Menneske nødvendig — ekte kontekst og sårbarhet</div>
+    </div>
+  </div>
+  <div class="cell empty"></div>
+  <div class="cell empty"></div>
+  <div class="cell proto">
+    <div class="activity r-user ki-partial">
+      <h3>Brukertesting ★</h3>
+      <p>Test av prototype, tenke-høyt-metode</p>
+      <div class="ai-note">↳ KI: syntetiske brukerprofiler, analyse av opptak</div>
+    </div>
+  </div>
+  <div class="cell empty"></div>
+  <div class="cell empty"></div>
+  <div class="cell">
+    <div class="activity r-user ki-partial">
+      <h3>Tilbakemelding</h3>
+      <p>Etter lansering, support, klager</p>
+      <div class="ai-note">↳ KI: sentiment-analyse, mønstre på tvers</div>
+    </div>
+  </div>
+
+  <!-- ═══ BACKEND-UTVIKLER ═══ -->
+  <div class="lane-label">
+    Backend-utvikler
+    <span class="role-tag tag-be">BE</span>
+  </div>
+  <div class="cell">
+    <div class="activity r-be ki-partial">
+      <h3>Teknisk innsikt</h3>
+      <p>Muligheter, begrensninger, integrasjoner</p>
+      <div class="ai-note">↳ KI: arkitekturforslag, teknologi-sammenligning</div>
+    </div>
+  </div>
+  <div class="cell empty"></div>
+  <div class="cell empty"></div>
+  <div class="cell proto">
+    <div class="activity r-be ki-partial">
+      <h3>Teknisk review ★</h3>
+      <p>Feasibility, API-design, estimering</p>
+      <div class="ai-note">↳ KI: genererer API-spec fra krav, estimatstøtte</div>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="activity r-be ki-replace">
+      <h3>Backend-implementering</h3>
+      <p>API, forretningslogikk, database, integrasjoner</p>
+      <div class="ai-note">↳ KI erstatter: Copilot, kode fra spec, boilerplate</div>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="activity r-be ki-partial">
+      <h3>Deploy og overvåking</h3>
+      <p>Produksjonssetting, logging</p>
+      <div class="ai-note">↳ KI: CI/CD-automatisering, logg-analyse</div>
+    </div>
+  </div>
+  <div class="cell empty"></div>
+
+  <!-- ═══ TESTER / QA ═══ -->
+  <div class="lane-label">
+    Tester / QA
+    <span class="role-tag tag-qa">QA</span>
+  </div>
+  <div class="cell empty"></div>
+  <div class="cell empty"></div>
+  <div class="cell empty"></div>
+  <div class="cell proto">
+    <div class="activity r-qa ki-replace">
+      <h3>Testplan ★</h3>
+      <p>Testcaser, akseptansekriterier, WCAG</p>
+      <div class="ai-note">↳ KI erstatter: genererer testcaser fra designspec og krav</div>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="activity r-qa ki-partial">
+      <h3>Funksjonell testing</h3>
+      <p>Manuell gjennomgang, edge cases</p>
+      <div class="ai-note">↳ KI: automatiserte regresjonstester</div>
+    </div>
+  </div>
+  <div class="cell">
+    <div class="activity r-qa ki-replace">
+      <h3>WCAG og ytelse</h3>
+      <p>Tilgjengelighetstest, performance</p>
+      <div class="ai-note">↳ KI erstatter: automatisk WCAG-skanning, Lighthouse</div>
+    </div>
+  </div>
+  <div class="cell empty"></div>
+
+</div><!-- /grid -->
+
+<p class="proto-label">★ Prototype-punkt (uke 5–6): prototypen distribueres samtidig til UX, frontend-designer, fagperson, bruker, backend og QA</p>
+</div><!-- /scroll-wrapper -->
+
+<div class="footer">
+  <p>
+    <strong>Om diagrammet:</strong>
+    Boksene med <strong style="color:#c00">rød hel kantlinje</strong> er aktiviteter der KI i dag kan ta over mesteparten av arbeidet.
+    Boksene med <strong style="color:#c00">stiplet rød kantlinje</strong> er aktiviteter der KI effektiviserer, men der mennesket fortsatt er viktig for kvalitet og dømmekraft.
+    Boksene uten markering krever menneskelig tilstedeværelse — særlig viktig for Husbanken der mange brukere er i sårbare livssituasjoner.
+    Skillet mellom <strong>frontend-designer</strong> (visuelt, komponenter, CSS) og <strong>backend-utvikler</strong> (API, logikk, integrasjoner) gjenspeiler at KI allerede i dag kan generere begge typer kode, men at backend-kode ofte krever mer domenespesifikk vurdering.
+  </p>
+</div>
+
+<script>
+  // Alternating row tint
+  const labels = document.querySelectorAll('.lane-label');
+  labels.forEach((label, i) => {
+    if (i % 2 === 1) {
+      let el = label;
+      const siblings = [];
+      siblings.push(el);
+      for (let j = 0; j < 7; j++) {
+        el = el.nextElementSibling;
+        if (el) siblings.push(el);
+      }
+      siblings.forEach(s => s.classList.add('row-tint-cell'));
+    }
+  });
+
+  // Apply tint via inline style instead
+  document.querySelectorAll('.lane-label').forEach((label, i) => {
+    if (i % 2 === 0) return;
+    const tint = 'rgba(0,0,0,0.035)';
+    label.style.background = '#e5e1db';
+    let el = label.nextElementSibling;
+    for (let j = 0; j < 7; j++) {
+      if (!el) break;
+      if (!el.classList.contains('proto')) {
+        el.style.background = el.classList.contains('empty')
+          ? 'repeating-linear-gradient(45deg,#eae7e1,#eae7e1 7px,#e2dfd9 7px,#e2dfd9 14px)'
+          : '#eae7e1';
+      }
+      el = el.nextElementSibling;
+    }
+  });
+</script>
+</body>
+</html>
