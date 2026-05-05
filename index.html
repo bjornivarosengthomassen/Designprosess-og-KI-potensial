@@ -166,6 +166,70 @@
   .legend-swatch.partial { border: 2px dashed var(--ki-red); background: transparent; }
   .legend-swatch.human   { border: 1.5px solid var(--hb-gray-15); background: transparent; }
 
+  /* ── KI TOGGLE BUTTON ── */
+  .ki-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--hb-green-60);
+    color: #fff;
+    border: none;
+    border-radius: var(--hb-radius-btn);
+    padding: 8px 18px 8px 14px;
+    font-family: var(--hb-font);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s;
+    white-space: nowrap;
+    margin-left: 12px;
+  }
+  .ki-toggle-btn:hover { background: var(--hb-green-80); }
+  .ki-toggle-btn:active { transform: scale(0.97); }
+
+  .ki-toggle-btn .toggle-track {
+    width: 36px;
+    height: 20px;
+    background: rgba(255,255,255,0.35);
+    border-radius: 10px;
+    position: relative;
+    transition: background 0.2s;
+    flex-shrink: 0;
+  }
+  .ki-toggle-btn .toggle-thumb {
+    position: absolute;
+    top: 3px; left: 3px;
+    width: 14px; height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    transition: left 0.18s cubic-bezier(.4,0,.2,1);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  }
+  .ki-toggle-btn.off { background: var(--hb-gray-65); }
+  .ki-toggle-btn.off .toggle-track { background: rgba(255,255,255,0.25); }
+  .ki-toggle-btn.off .toggle-thumb { left: 19px; }
+
+  /* ── KI HIDDEN STATE ── */
+  body.ki-hidden .cell.ki-replace,
+  body.ki-hidden .cell.ki-partial {
+    outline: none !important;
+  }
+  body.ki-hidden .cell.ki-replace::after,
+  body.ki-hidden .cell.ki-partial::after {
+    display: none !important;
+  }
+  body.ki-hidden .ai-note {
+    display: none !important;
+  }
+  body.ki-hidden .legend-item.ki-legend {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  body.ki-hidden .summary .summary-col:nth-child(1),
+  body.ki-hidden .summary .summary-col:nth-child(2) {
+    opacity: 0.25;
+  }
+
   /* ── SCROLL WRAPPER ── */
   .scroll-outer {
     overflow-x: auto;
@@ -499,9 +563,13 @@
     <p>Tverrfaglig team · 7 roller · Husbanken-kontekst</p>
   </div>
   <div class="legend">
-    <div class="legend-item"><div class="legend-swatch replace"></div><span>KI kan erstatte</span></div>
-    <div class="legend-item"><div class="legend-swatch partial"></div><span>KI effektiviserer delvis</span></div>
+    <div class="legend-item ki-legend"><div class="legend-swatch replace"></div><span>KI kan erstatte</span></div>
+    <div class="legend-item ki-legend"><div class="legend-swatch partial"></div><span>KI effektiviserer delvis</span></div>
     <div class="legend-item"><div class="legend-swatch human"></div><span>Menneske nødvendig</span></div>
+    <button class="ki-toggle-btn" id="kiToggle" onclick="toggleKI()" title="Vis/skjul KI-markering">
+      <span class="toggle-track"><span class="toggle-thumb"></span></span>
+      <span id="kiToggleLabel">KI-visning på</span>
+    </button>
   </div>
 </div>
 
@@ -696,5 +764,14 @@
   <strong>Om diagrammet:</strong> Boksene med <strong>rød hel kantlinje</strong> er aktiviteter der KI i dag kan ta over mesteparten av arbeidet. Boksene med <strong>stiplet rød kantlinje</strong> er aktiviteter der KI effektiviserer, men der mennesket er avgjørende for kvalitet og faglig dømmekraft. Boksene uten markering krever menneskelig tilstedeværelse — særlig viktig for Husbanken der mange brukere er i sårbare livssituasjoner og fagkunnskap om regelverk er kritisk.
 </div>
 
+<script>
+  function toggleKI() {
+    const btn = document.getElementById('kiToggle');
+    const label = document.getElementById('kiToggleLabel');
+    const isHidden = document.body.classList.toggle('ki-hidden');
+    btn.classList.toggle('off', isHidden);
+    label.textContent = isHidden ? 'KI-visning av' : 'KI-visning på';
+  }
+</script>
 </body>
 </html>
