@@ -3,585 +3,698 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Designprosess og KI-potensial</title>
+<title>Designprosess og KI-potensial – Husbanken</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  /* ── Husbanken design tokens (fra husbanken.no) ── */
+  :root {
+    /* Grønnpaletten */
+    --hb-green-5:    #e7f1e0;   /* lys bakgrunn */
+    --hb-green-15:   #b6d4a1;
+    --hb-green-25:   #8ac05d;
+    --hb-green-40:   #649343;
+    --hb-green-45:   #5b853d;
+    --hb-green-60:   #45652f;   /* mørk grønn – hoved */
+    --hb-green-80:   #2d421f;
+    --hb-green-85:   #213116;   /* footer */
+    --hb-logo:       #82b55e;   /* logo-grønn */
+    --hb-menu-bg:    #e7f1e0;
+
+    /* Grå */
+    --hb-gray-15:    #c9cfd4;
+    --hb-gray-35:    #8d9aa5;
+    --hb-gray-65:    #4c5861;
+    --hb-gray-85:    #2b3136;
+    --hb-white:      #ffffff;
+    --hb-surface:    #e7eff3;   /* kort-bakgrunn (rgb 231 239 243) */
+
+    /* Tekst */
+    --hb-text:       #11180b;   /* nesten svart, grønntonet */
+    --hb-text-muted: #4c5861;
+
+    /* Blå for lenker */
+    --hb-blue:       #1981ff;
+    --hb-blue-dark:  #0053b8;
+
+    /* Komponenter */
+    --hb-radius-card:   24px;
+    --hb-radius-btn:    24px;
+    --hb-radius-badge:  20px;
+    --hb-shadow:        0px 4px 15px rgba(0,0,0,0.13);
+    --hb-border:        1px solid var(--hb-gray-15);
+    --hb-font:          'Inter', sans-serif;
+
+    /* KI-signaler */
+    --ki-red:        #c0392b;
+  }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    font-family: 'DM Sans', sans-serif;
-    background: #f5f3ef;
-    color: #1a1a18;
-    min-height: 100vh;
+    font-family: var(--hb-font);
+    background: #f7faf5;
+    color: var(--hb-text);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
   }
 
-  header {
-    background: #1a1a18;
-    color: #f5f3ef;
-    padding: 24px 40px 20px;
+  /* ── TOPBAR (Husbanken header) ── */
+  .topbar {
+    background: var(--hb-white);
+    border-bottom: 1px solid var(--hb-gray-15);
+    padding: 0 40px;
+    height: 68px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 200;
+  }
+
+  .hb-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+
+  /* Husbanken logo ring (SVG inline) */
+  .hb-logo-ring {
+    width: 40px;
+    height: 40px;
+  }
+
+  .hb-logo-wordmark {
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--hb-text);
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+  }
+
+  .hb-logo-wordmark small {
+    display: block;
+    font-size: 9px;
+    font-weight: 400;
+    color: var(--hb-text-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .topbar-sep { margin-left: auto; }
+
+  .topbar-title {
+    font-size: 13px;
+    color: var(--hb-text-muted);
+    background: var(--hb-green-5);
+    padding: 5px 14px;
+    border-radius: var(--hb-radius-btn);
+    font-weight: 500;
+  }
+
+  /* ── PAGE HERO ── */
+  .hero {
+    background: var(--hb-white);
+    border-bottom: 1px solid var(--hb-gray-15);
+    padding: 24px 40px 20px;
     display: flex;
     align-items: flex-end;
-    gap: 40px;
+    gap: 32px;
     flex-wrap: wrap;
   }
 
-  header h1 { font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
-  header p  { font-size: 12px; color: #888; margin-top: 3px; }
+  .hero h1 {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--hb-text);
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+  }
 
+  .hero p {
+    font-size: 13.5px;
+    color: var(--hb-text-muted);
+    margin-top: 4px;
+  }
+
+  /* Legend */
   .legend {
+    margin-left: auto;
     display: flex;
-    gap: 18px;
+    gap: 20px;
     align-items: center;
     flex-wrap: wrap;
-    margin-left: auto;
   }
 
   .legend-item {
     display: flex;
     align-items: center;
-    gap: 7px;
-    font-size: 11.5px;
-    color: #ccc;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--hb-text-muted);
   }
 
-  .legend-box { width: 26px; height: 16px; border-radius: 4px; flex-shrink: 0; }
-  .legend-box.replace { border: 3px solid #d42020; background: transparent; }
-  .legend-box.partial { border: 2px dashed #d42020; background: transparent; }
-  .legend-box.human   { border: 1.5px solid #555; background: transparent; }
+  .legend-swatch {
+    width: 30px;
+    height: 18px;
+    border-radius: 5px;
+  }
+  .legend-swatch.replace { border: 3px solid var(--ki-red); background: transparent; }
+  .legend-swatch.partial { border: 2px dashed var(--ki-red); background: transparent; }
+  .legend-swatch.human   { border: 1.5px solid var(--hb-gray-15); background: transparent; }
 
-  .scroll-wrapper {
+  /* ── SCROLL WRAPPER ── */
+  .scroll-outer {
     overflow-x: auto;
-    padding: 28px 40px 48px;
+    padding: 28px 40px 16px;
   }
+  .scroll-outer::-webkit-scrollbar { height: 6px; }
+  .scroll-outer::-webkit-scrollbar-track { background: var(--hb-green-5); border-radius: 10px; }
+  .scroll-outer::-webkit-scrollbar-thumb { background: var(--hb-logo); border-radius: 10px; }
 
-  /* 9 columns: label + 7 phases + 1 post-launch */
+  /* ── GRID ── */
   .grid {
     display: grid;
-    grid-template-columns: 140px repeat(7, 168px);
-    gap: 0;
-    min-width: 1320px;
+    grid-template-columns: 152px repeat(7, 174px);
+    min-width: 1374px;
+    border-radius: var(--hb-radius-card);
+    overflow: hidden;
+    box-shadow: var(--hb-shadow);
+    border: 1px solid var(--hb-gray-15);
+    background: var(--hb-white);
   }
 
-  .phase-header {
-    color: #f5f3ef;
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.07em;
-    text-transform: uppercase;
+  /* Phase headers */
+  .ph {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    padding: 8px;
+    padding: 10px 8px;
     text-align: center;
-    line-height: 1.5;
-    height: 44px;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--hb-white);
+    height: 52px;
+    border-right: 1px solid rgba(255,255,255,0.12);
+    line-height: 1.3;
   }
+  .ph span { font-size: 10px; font-weight: 400; opacity: .65; letter-spacing: 0; text-transform: none; margin-top: 2px; }
+  .ph-corner  { background: var(--hb-green-85); }
+  .ph-utforsk { background: var(--hb-green-60); }
+  .ph-definer { background: #3a5e28; }
+  .ph-ideer   { background: #4f7335; }
+  .ph-design  { background: var(--hb-logo); color: var(--hb-text); border-left: 2px solid var(--hb-green-60); border-right: 2px solid var(--hb-green-60); }
+  .ph-bygg    { background: var(--hb-green-80); }
+  .ph-test    { background: #253e18; }
+  .ph-lansert { background: var(--hb-green-85); }
 
-  .phase-header span { font-weight: 400; opacity: .65; font-size: 10px; letter-spacing: 0; text-transform: none; }
-  .phase-header.empty { background: #1a1a18; }
-  .phase-header.utforsk { background: #2d2060; }
-  .phase-header.definer { background: #0f5c47; }
-  .phase-header.ideer   { background: #7a2818; }
-  .phase-header.design  { background: #0c3d70; border-left: 2px solid #4a9fe0; border-right: 2px solid #4a9fe0; }
-  .phase-header.bygg    { background: #3a3200; }
-  .phase-header.test    { background: #5a1a00; }
-  .phase-header.lansert { background: #222; }
-
-  /* Row label */
-  .lane-label {
+  /* Row labels */
+  .rl {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: flex-end;
-    padding: 14px 12px 14px 6px;
-    font-size: 11.5px;
-    font-weight: 600;
-    color: #333;
-    letter-spacing: 0.01em;
+    justify-content: center;
+    padding: 14px 14px 14px 8px;
+    border-right: 2px solid var(--hb-green-60);
+    border-bottom: 1px solid var(--hb-gray-15);
+    background: var(--hb-green-5);
     text-align: right;
-    border-right: 2px solid #1a1a18;
-    border-bottom: 1px solid #d8d5cf;
-    background: #ede9e3;
-    line-height: 1.4;
+    gap: 6px;
+    min-height: 115px;
   }
 
-  .lane-label .role-tag {
+  .rl-name {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: var(--hb-green-60);
+    line-height: 1.3;
+  }
+
+  .badge {
     font-size: 9.5px;
-    font-weight: 500;
-    margin-top: 3px;
-    padding: 2px 6px;
-    border-radius: 10px;
-    letter-spacing: 0.04em;
+    font-weight: 700;
+    padding: 2px 9px;
+    border-radius: var(--hb-radius-badge);
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    align-self: flex-end;
+    white-space: nowrap;
+    color: var(--hb-white);
   }
 
-  /* Cells */
+  /* Cell */
   .cell {
-    padding: 12px 10px;
-    border-right: 1px solid #d8d5cf;
-    border-bottom: 1px solid #d8d5cf;
-    background: #f5f3ef;
-    min-height: 108px;
+    padding: 11px 10px;
+    border-right: 1px solid var(--hb-gray-15);
+    border-bottom: 1px solid var(--hb-gray-15);
+    background: var(--hb-white);
     position: relative;
+    min-height: 115px;
   }
 
-  .cell.proto { background: #eef4fb; border-left: 2px solid #4a9fe0; border-right: 2px solid #4a9fe0; }
-  .cell.empty { background: repeating-linear-gradient(45deg, transparent, transparent 7px, rgba(0,0,0,0.025) 7px, rgba(0,0,0,0.025) 14px); }
-  .cell.empty.proto { background: repeating-linear-gradient(45deg, #eef4fb, #eef4fb 7px, #e4eef8 7px, #e4eef8 14px); }
+  .cell.empty {
+    background: repeating-linear-gradient(
+      45deg,
+      var(--hb-white), var(--hb-white) 8px,
+      #f0f5ee 8px, #f0f5ee 16px
+    );
+  }
 
-  /* Alternating row tint — applied via JS */
-  .row-tint .cell:not(.proto)       { background: #eeebe5; }
-  .row-tint .cell.empty:not(.proto) { background: repeating-linear-gradient(45deg, #eeebe5, #eeebe5 7px, #e6e3dd 7px, #e6e3dd 14px); }
-  .row-tint .lane-label             { background: #e5e1db; }
+  /* Prototype column */
+  .cell.proto {
+    background: var(--hb-green-5);
+    border-left: 2.5px solid var(--hb-logo);
+    border-right: 2.5px solid var(--hb-logo);
+  }
+  .cell.empty.proto {
+    background: repeating-linear-gradient(
+      45deg,
+      var(--hb-green-5), var(--hb-green-5) 8px,
+      #d8eacc 8px, #d8eacc 16px
+    );
+  }
 
-  /* Activity card */
-  .activity {
-    border-radius: 5px;
-    padding: 9px 10px 10px;
+  /* Alternating rows */
+  .row-odd .rl   { background: var(--hb-white); }
+  .row-odd .cell:not(.proto) { background: #fafcf9; }
+  .row-odd .cell.empty:not(.proto) {
+    background: repeating-linear-gradient(
+      45deg, #fafcf9, #fafcf9 8px, #f0f5ee 8px, #f0f5ee 16px
+    );
+  }
+
+  /* Card */
+  .card {
+    background: var(--hb-surface);
+    border-radius: 16px;
+    padding: 10px 11px 12px;
     height: 100%;
     display: flex;
     flex-direction: column;
     gap: 4px;
+    border: 1px solid transparent;
   }
 
-  .activity h3 { font-size: 12px; font-weight: 600; line-height: 1.35; }
-  .activity p  { font-size: 11px; line-height: 1.45; opacity: .72; }
+  .card h3 {
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--hb-text);
+  }
+
+  .card p {
+    font-size: 11px;
+    line-height: 1.5;
+    color: var(--hb-text-muted);
+  }
 
   .ai-note {
     margin-top: auto;
-    padding-top: 6px;
+    padding-top: 7px;
     font-size: 10px;
-    font-family: 'DM Mono', monospace;
-    font-weight: 500;
-    color: #b81818;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    color: var(--ki-red);
     line-height: 1.45;
-    border-top: 1px solid rgba(180,24,24,.18);
+    border-top: 1px dashed rgba(192,57,43,0.25);
   }
 
   .human-note {
     margin-top: auto;
-    padding-top: 6px;
+    padding-top: 7px;
     font-size: 10px;
-    font-family: 'DM Mono', monospace;
-    color: #777;
-    border-top: 1px solid #ddd;
+    font-family: 'Courier New', monospace;
+    color: var(--hb-text-muted);
+    border-top: 1px solid var(--hb-gray-15);
     line-height: 1.4;
   }
 
-  /* Role colour fills */
-  .r-po       { background: #ede9fc; color: #2d1f6e; }
-  .r-ux       { background: #d8f5ec; color: #0a3d2c; }
-  .r-fe       { background: #e0f0ff; color: #0a2d50; }
-  .r-fag      { background: #fce8e2; color: #6b1e0e; }
-  .r-user     { background: #e8e8e6; color: #2a2a28; }
-  .r-be       { background: #dceefb; color: #0c2d4a; }
-  .r-qa       { background: #fef0d6; color: #4a2c00; }
+  /* Role card tints */
+  .r-po   { background: #eeecfa; border-color: #c5bff0; }
+  .r-ux   { background: var(--hb-green-5); border-color: var(--hb-green-15); }
+  .r-fe   { background: #e5f0fb; border-color: #b5d2f0; }
+  .r-fag  { background: #fff6e6; border-color: #f0d9a0; }
+  .r-user { background: #f0f4f0; border-color: var(--hb-gray-15); }
+  .r-be   { background: #e8f3fb; border-color: #a8ceea; }
+  .r-qa   { background: #fff8e8; border-color: #f0e0a0; }
 
-  /* Role tag colours */
-  .tag-po  { background: #534AB7; color: #fff; }
-  .tag-ux  { background: #0f6e56; color: #fff; }
-  .tag-fe  { background: #185FA5; color: #fff; }
-  .tag-fag { background: #993C1D; color: #fff; }
-  .tag-user{ background: #666; color: #fff; }
-  .tag-be  { background: #0c447c; color: #fff; }
-  .tag-qa  { background: #854F0B; color: #fff; }
+  /* Badge colours */
+  .b-po   { background: #6c5fbc; }
+  .b-ux   { background: var(--hb-green-60); }
+  .b-fe   { background: #1870c0; }
+  .b-fag  { background: #b07010; }
+  .b-user { background: var(--hb-gray-65); }
+  .b-be   { background: #1060a0; }
+  .b-qa   { background: #9a7000; }
 
-  /* KI borders */
-  .ki-replace {
-    outline: 3px solid #d42020;
-    outline-offset: -1px;
+  /* KI indicators on CELL */
+  .cell.ki-replace {
+    outline: 3.5px solid var(--ki-red);
+    outline-offset: -3.5px;
+    z-index: 1;
   }
-  .ki-replace::before {
-    content: 'KI erstatter';
+  .cell.ki-replace::after {
+    content: 'KI ERSTATTER';
     position: absolute;
-    top: -9px; right: 6px;
-    font-size: 9px; font-weight: 700;
-    background: #d42020; color: #fff;
-    padding: 1px 6px; border-radius: 8px;
-    letter-spacing: 0.05em;
-    font-family: 'DM Mono', monospace;
+    top: 0; right: 0;
+    font-size: 8.5px;
+    font-weight: 800;
+    font-family: var(--hb-font);
+    background: var(--ki-red);
+    color: #fff;
+    padding: 2px 8px;
+    border-bottom-left-radius: 10px;
+    letter-spacing: 0.08em;
+    z-index: 2;
   }
 
-  .ki-partial {
-    outline: 2px dashed #d42020;
-    outline-offset: -1px;
+  .cell.ki-partial {
+    outline: 2.5px dashed var(--ki-red);
+    outline-offset: -3.5px;
+    z-index: 1;
   }
-  .ki-partial::before {
-    content: 'KI effektiviserer';
+  .cell.ki-partial::after {
+    content: 'KI EFFEKTIVISERER';
     position: absolute;
-    top: -9px; right: 6px;
-    font-size: 9px; font-weight: 600;
-    background: #fff0f0; color: #b01818;
-    padding: 1px 6px; border-radius: 8px;
-    letter-spacing: 0.04em;
-    font-family: 'DM Mono', monospace;
-    border: 1px dashed #d42020;
+    top: 0; right: 0;
+    font-size: 8.5px;
+    font-weight: 700;
+    font-family: var(--hb-font);
+    background: #fef0ee;
+    color: var(--ki-red);
+    padding: 2px 8px;
+    border-bottom-left-radius: 10px;
+    letter-spacing: 0.06em;
+    border-left: 1px dashed var(--ki-red);
+    border-bottom: 1px dashed var(--ki-red);
+    z-index: 2;
   }
 
-  .proto-label {
+  /* Proto label */
+  .proto-note {
+    min-width: 1374px;
     text-align: center;
-    font-size: 10px;
-    color: #185FA5;
-    font-family: 'DM Mono', monospace;
+    font-size: 11.5px;
+    color: var(--hb-green-60);
     font-weight: 600;
-    letter-spacing: 0.05em;
-    padding: 6px 0 0;
-    min-width: 1320px;
+    padding: 10px 0 4px;
+    letter-spacing: 0.01em;
   }
 
-  .footer {
-    padding: 0 40px 40px;
+  /* ── SUMMARY ── */
+  .summary-wrap {
+    padding: 8px 40px 32px;
+  }
+
+  .summary {
+    max-width: 1374px;
+    min-width: 780px;
+    background: var(--hb-white);
+    border-radius: var(--hb-radius-card);
+    box-shadow: var(--hb-shadow);
+    overflow: hidden;
+    border: 1px solid var(--hb-gray-15);
+  }
+
+  .summary-head {
+    background: var(--hb-green-85);
+    color: var(--hb-white);
     font-size: 12px;
-    color: #777;
-    max-width: 980px;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 12px 20px;
+  }
+
+  .summary-cols {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .summary-col {
+    padding: 16px 18px;
+    border-right: 1px solid var(--hb-gray-15);
+  }
+  .summary-col:last-child { border-right: none; }
+
+  .summary-col h4 {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--hb-text);
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .s-dot { width: 14px; height: 14px; border-radius: 3px; flex-shrink: 0; }
+
+  .summary-col ul {
+    list-style: none;
+    font-size: 12px;
+    color: var(--hb-text-muted);
     line-height: 1.8;
   }
-  .footer strong { color: #333; }
+  .summary-col ul li::before { content: '→ '; color: var(--hb-green-40); font-weight: 600; }
 
-  .scroll-wrapper::-webkit-scrollbar { height: 6px; }
-  .scroll-wrapper::-webkit-scrollbar-track { background: #e0ddd7; border-radius: 3px; }
-  .scroll-wrapper::-webkit-scrollbar-thumb { background: #aaa; border-radius: 3px; }
+  /* ── FOOTER ── */
+  .footer {
+    background: var(--hb-green-85);
+    color: rgba(255,255,255,0.8);
+    padding: 20px 40px;
+    font-size: 12.5px;
+    line-height: 1.75;
+  }
+  .footer strong { color: #fff; }
 </style>
 </head>
 <body>
 
-<header>
+<!-- Husbanken topbar -->
+<div class="topbar">
+  <a class="hb-logo" href="#">
+    <svg class="hb-logo-ring" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="20" cy="20" r="18" stroke="#82b55e" stroke-width="2.5" fill="none"/>
+      <circle cx="20" cy="20" r="10" stroke="#45652f" stroke-width="2" fill="none"/>
+      <circle cx="20" cy="20" r="3" fill="#82b55e"/>
+    </svg>
+    <div class="hb-logo-wordmark">
+      Husbanken
+      <small>1946–2026</small>
+    </div>
+  </a>
+  <span class="topbar-sep"></span>
+  <span class="topbar-title">Internt arbeidsverktøy</span>
+</div>
+
+<!-- Hero/header -->
+<div class="hero">
   <div>
     <h1>Designprosess og KI-potensial</h1>
     <p>Tverrfaglig team · 7 roller · Husbanken-kontekst</p>
   </div>
   <div class="legend">
-    <div class="legend-item"><div class="legend-box replace"></div><span>KI kan erstatte</span></div>
-    <div class="legend-item"><div class="legend-box partial"></div><span>KI effektiviserer delvis</span></div>
-    <div class="legend-item"><div class="legend-box human"></div><span>Menneske nødvendig</span></div>
+    <div class="legend-item"><div class="legend-swatch replace"></div><span>KI kan erstatte</span></div>
+    <div class="legend-item"><div class="legend-swatch partial"></div><span>KI effektiviserer delvis</span></div>
+    <div class="legend-item"><div class="legend-swatch human"></div><span>Menneske nødvendig</span></div>
   </div>
-</header>
+</div>
 
-<div class="scroll-wrapper">
+<!-- Scroll diagram -->
+<div class="scroll-outer">
 <div class="grid">
 
   <!-- Phase headers -->
-  <div class="phase-header empty"></div>
-  <div class="phase-header utforsk">Utforsk<span>Uke 1</span></div>
-  <div class="phase-header definer">Definer<span>Uke 2–3</span></div>
-  <div class="phase-header ideer">Ideer<span>Uke 4</span></div>
-  <div class="phase-header design">Design + prototype ★<span>Uke 5–6</span></div>
-  <div class="phase-header bygg">Bygg<span>Uke 7–9</span></div>
-  <div class="phase-header test">Test og lever<span>Uke 10–11</span></div>
-  <div class="phase-header lansert">Lansering<span>Uke 12+</span></div>
+  <div class="ph ph-corner"></div>
+  <div class="ph ph-utforsk">Utforsk<span>Uke 1</span></div>
+  <div class="ph ph-definer">Definer<span>Uke 2–3</span></div>
+  <div class="ph ph-ideer">Ideer<span>Uke 4</span></div>
+  <div class="ph ph-design">Design + prototype ★<span>Uke 5–6</span></div>
+  <div class="ph ph-bygg">Bygg<span>Uke 7–9</span></div>
+  <div class="ph ph-test">Test og lever<span>Uke 10–11</span></div>
+  <div class="ph ph-lansert">Lansering<span>Uke 12+</span></div>
 
   <!-- ═══ PRODUKTEIER ═══ -->
-  <div class="lane-label">
-    Produkteier
-    <span class="role-tag tag-po">PO</span>
+  <div class="rl row-even"><span class="rl-name">Produkteier</span><span class="badge b-po">PO</span></div>
+  <div class="cell row-even ki-partial">
+    <div class="card r-po"><h3>Brief og mandat</h3><p>Mål, rammer, OKR, budsjett</p><div class="ai-note">↳ KI: utkast til brief og OKR-forslag</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-po ki-partial">
-      <h3>Brief og mandat</h3>
-      <p>Mål, rammer, OKR, budsjett</p>
-      <div class="ai-note">↳ KI: utkast til brief og OKR-forslag</div>
-    </div>
+  <div class="cell row-even ki-partial">
+    <div class="card r-po"><h3>Prioritering</h3><p>Backlog, roadmap, sprintplan</p><div class="ai-note">↳ KI: oppsummerer og rangerer</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-po ki-partial">
-      <h3>Prioritering</h3>
-      <p>Backlog, roadmap</p>
-      <div class="ai-note">↳ KI: oppsummerer og rangerer</div>
-    </div>
+  <div class="cell row-even empty"></div>
+  <div class="cell row-even proto ki-partial">
+    <div class="card r-po"><h3>Konseptvalg ★</h3><p>Godkjenner retning og scope</p><div class="ai-note">↳ KI: oppsummerer alternativer</div></div>
   </div>
-  <div class="cell empty"></div>
-  <div class="cell proto">
-    <div class="activity r-po ki-partial">
-      <h3>Konseptvalg</h3>
-      <p>Godkjenner retning og scope</p>
-      <div class="ai-note">↳ KI: oppsummerer alternativer</div>
-    </div>
-  </div>
-  <div class="cell empty"></div>
-  <div class="cell empty"></div>
-  <div class="cell">
-    <div class="activity r-po">
-      <h3>Akseptansetest</h3>
-      <p>Sluttgodkjenning og lansering</p>
-      <div class="human-note">Menneske nødvendig</div>
-    </div>
+  <div class="cell row-even empty"></div>
+  <div class="cell row-even empty"></div>
+  <div class="cell row-even">
+    <div class="card r-po"><h3>Akseptansetest</h3><p>Sluttgodkjenning og lansering</p><div class="human-note">Menneske nødvendig</div></div>
   </div>
 
   <!-- ═══ UX-DESIGNER ═══ -->
-  <div class="lane-label">
-    UX-designer
-    <span class="role-tag tag-ux">UX</span>
+  <div class="rl row-odd"><span class="rl-name">UX-designer</span><span class="badge b-ux">UX</span></div>
+  <div class="cell row-odd ki-partial">
+    <div class="card r-ux"><h3>Brukerinnsikt</h3><p>Intervjuer, observasjon, desk research</p><div class="ai-note">↳ KI: transkriberer og koder funn</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-ux ki-partial">
-      <h3>Brukerinnsikt</h3>
-      <p>Intervjuer, observasjon, desk research</p>
-      <div class="ai-note">↳ KI: transkriberer og koder funn</div>
-    </div>
+  <div class="cell row-odd ki-replace">
+    <div class="card r-ux"><h3>Syntese</h3><p>Affinitetsmap, personas, HMW</p><div class="ai-note">↳ KI erstatter: genererer personas og HMW fra rådata</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-ux ki-replace">
-      <h3>Syntese</h3>
-      <p>Affinitetsmap, personas, HMW-spørsmål</p>
-      <div class="ai-note">↳ KI erstatter: genererer personas og HMW fra rådata</div>
-    </div>
+  <div class="cell row-odd ki-partial">
+    <div class="card r-ux"><h3>Lav-fi skisser</h3><p>Wireframes, brukerflyt, konsepter</p><div class="ai-note">↳ KI: idéforslag, v0, Figma AI</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-ux ki-partial">
-      <h3>Lav-fi skisser</h3>
-      <p>Wireframes, brukerflyt, konsepter</p>
-      <div class="ai-note">↳ KI: idéforslag, v0, Figma AI</div>
-    </div>
+  <div class="cell row-odd proto ki-partial">
+    <div class="card r-ux"><h3>Prototype ★</h3><p>Interaktiv mockup, navigasjon, brukerflyt</p><div class="ai-note">↳ KI: komponentforslag, flytvariantgenerering</div></div>
   </div>
-  <div class="cell proto">
-    <div class="activity r-ux ki-partial">
-      <h3>Prototype ★</h3>
-      <p>Interaktiv mockup, brukerflyt, navigasjon</p>
-      <div class="ai-note">↳ KI: komponentforslag, variantgenerering</div>
-    </div>
+  <div class="cell row-odd ki-partial">
+    <div class="card r-ux"><h3>Støtte under bygg</h3><p>Avklarer designintent</p><div class="ai-note">↳ KI: dokumentasjon, design tokens</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-ux ki-partial">
-      <h3>Støtte under bygg</h3>
-      <p>Avklarer designintent</p>
-      <div class="ai-note">↳ KI: dokumentasjonshjep, tokens</div>
-    </div>
-  </div>
-  <div class="cell empty"></div>
-  <div class="cell empty"></div>
+  <div class="cell row-odd empty"></div>
+  <div class="cell row-odd empty"></div>
 
   <!-- ═══ FRONTEND-DESIGNER ═══ -->
-  <div class="lane-label">
-    Frontend-designer
-    <span class="role-tag tag-fe">FE Design</span>
+  <div class="rl row-even"><span class="rl-name">Frontend-designer</span><span class="badge b-fe">FE Design</span></div>
+  <div class="cell row-even empty"></div>
+  <div class="cell row-even empty"></div>
+  <div class="cell row-even ki-partial">
+    <div class="card r-fe"><h3>Komponentbibliotek</h3><p>Designsystem, tokens, stiler</p><div class="ai-note">↳ KI: Figma AI, token-generering</div></div>
   </div>
-  <div class="cell empty"></div>
-  <div class="cell empty"></div>
-  <div class="cell">
-    <div class="activity r-fe ki-partial">
-      <h3>Komponentbibliotek</h3>
-      <p>Designsystem, tokens, stiler</p>
-      <div class="ai-note">↳ KI: Figma AI, token-generering</div>
-    </div>
+  <div class="cell row-even proto ki-partial">
+    <div class="card r-fe"><h3>Hi-fi visuelt design ★</h3><p>Farger, typografi, layout, responsivt</p><div class="ai-note">↳ KI: stilforslag, layout-varianter, UU-sjekk</div></div>
   </div>
-  <div class="cell proto">
-    <div class="activity r-fe ki-partial">
-      <h3>Hi-fi visuelt design ★</h3>
-      <p>Farger, typografi, layout, responsivt</p>
-      <div class="ai-note">↳ KI: stilforslag, layout-varianter, tilgjengelighetsjekk</div>
-    </div>
+  <div class="cell row-even ki-replace">
+    <div class="card r-fe"><h3>Frontend-kode</h3><p>HTML/CSS, komponenter, animasjoner</p><div class="ai-note">↳ KI erstatter: komponentkode fra designspec</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-fe ki-replace">
-      <h3>Frontend-kode</h3>
-      <p>HTML/CSS, komponenter, animasjoner</p>
-      <div class="ai-note">↳ KI erstatter: genererer komponentkode fra designspec</div>
-    </div>
+  <div class="cell row-even ki-partial">
+    <div class="card r-fe"><h3>UI-review</h3><p>Visuell QA, pikselperfekt sjekk</p><div class="ai-note">↳ KI: automatisk diff mot designfil</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-fe ki-partial">
-      <h3>UI-review</h3>
-      <p>Visuell QA, pikselperfekt sjekk</p>
-      <div class="ai-note">↳ KI: automatisk diff mot designfil</div>
-    </div>
-  </div>
-  <div class="cell empty"></div>
+  <div class="cell row-even empty"></div>
 
   <!-- ═══ FAGPERSON ═══ -->
-  <div class="lane-label">
-    Fagperson
-    <span class="role-tag tag-fag">Fag</span>
+  <div class="rl row-odd"><span class="rl-name">Fagperson</span><span class="badge b-fag">FAG</span></div>
+  <div class="cell row-odd">
+    <div class="card r-fag"><h3>Faglig kontekst</h3><p>Regelverk, domeneforståelse, lovkrav</p><div class="human-note">Menneske nødvendig — kontekstuell ekspertise</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-fag">
-      <h3>Faglig kontekst</h3>
-      <p>Regelverk, fagressurser, domeneforståelse</p>
-      <div class="human-note">Menneske nødvendig — kontekstuell ekspertise</div>
-    </div>
+  <div class="cell row-odd ki-partial">
+    <div class="card r-fag"><h3>Kravspesifikasjon</h3><p>Funksjonelle krav, UU, lovkrav</p><div class="ai-note">↳ KI: strukturerer og sjekker mot regelverk</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-fag ki-partial">
-      <h3>Kravspesifikasjon</h3>
-      <p>Funksjonelle krav, lovkrav, UU</p>
-      <div class="ai-note">↳ KI: strukturerer og sjekker mot regelverk</div>
-    </div>
+  <div class="cell row-odd ki-partial">
+    <div class="card r-fag"><h3>Faglig innhold</h3><p>Tekster, veiledninger, brukerstøtte</p><div class="ai-note">↳ KI: utkast, forenkling til klarspråk</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-fag ki-partial">
-      <h3>Faglig innhold</h3>
-      <p>Tekster, veiledninger, brukerstøtte-innhold</p>
-      <div class="ai-note">↳ KI: utkast til faginnhold, forenkling av språk</div>
-    </div>
+  <div class="cell row-odd proto ki-replace">
+    <div class="card r-fag"><h3>Innhold til prototype ★</h3><p>UX-tekst, labels, feilmeldinger, hjelptekster</p><div class="ai-note">↳ KI erstatter: genererer og varierer mikrotekst</div></div>
   </div>
-  <div class="cell proto">
-    <div class="activity r-fag ki-replace">
-      <h3>Innhold til prototype ★</h3>
-      <p>UX-tekst, labels, feilmeldinger, hjelptekster</p>
-      <div class="ai-note">↳ KI erstatter: genererer og varierer mikrotekst og UX-kopi</div>
-    </div>
+  <div class="cell row-odd empty"></div>
+  <div class="cell row-odd ki-partial">
+    <div class="card r-fag"><h3>Innholds-QA</h3><p>Faglig korrekthet, tone, lovkrav</p><div class="ai-note">↳ KI: konsistens, lovsjekk, klarspråk</div></div>
   </div>
-  <div class="cell empty"></div>
-  <div class="cell">
-    <div class="activity r-fag ki-partial">
-      <h3>Innholds-QA</h3>
-      <p>Faglig korrekthet, tone, lovkrav</p>
-      <div class="ai-note">↳ KI: konsistens- og lovsjekk, klarspråk</div>
-    </div>
-  </div>
-  <div class="cell empty"></div>
+  <div class="cell row-odd empty"></div>
 
   <!-- ═══ BRUKER ═══ -->
-  <div class="lane-label">
-    Bruker
-    <span class="role-tag tag-user">Bruker</span>
+  <div class="rl row-even"><span class="rl-name">Bruker</span><span class="badge b-user">BRUKER</span></div>
+  <div class="cell row-even">
+    <div class="card r-user"><h3>Innsiktsintervju</h3><p>Forskningsdeltaker, kontekstuell observasjon</p><div class="human-note">Menneske nødvendig — ekte kontekst</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-user">
-      <h3>Innsiktsintervju</h3>
-      <p>Forskningsdeltaker, kontekstuell observasjon</p>
-      <div class="human-note">Menneske nødvendig — ekte kontekst og sårbarhet</div>
-    </div>
+  <div class="cell row-even empty"></div>
+  <div class="cell row-even empty"></div>
+  <div class="cell row-even proto ki-partial">
+    <div class="card r-user"><h3>Brukertesting ★</h3><p>Test av prototype, tenke-høyt-metode</p><div class="ai-note">↳ KI: syntetiske brukerprofiler, analyse</div></div>
   </div>
-  <div class="cell empty"></div>
-  <div class="cell empty"></div>
-  <div class="cell proto">
-    <div class="activity r-user ki-partial">
-      <h3>Brukertesting ★</h3>
-      <p>Test av prototype, tenke-høyt-metode</p>
-      <div class="ai-note">↳ KI: syntetiske brukerprofiler, analyse av opptak</div>
-    </div>
-  </div>
-  <div class="cell empty"></div>
-  <div class="cell empty"></div>
-  <div class="cell">
-    <div class="activity r-user ki-partial">
-      <h3>Tilbakemelding</h3>
-      <p>Etter lansering, support, klager</p>
-      <div class="ai-note">↳ KI: sentiment-analyse, mønstre på tvers</div>
-    </div>
+  <div class="cell row-even empty"></div>
+  <div class="cell row-even empty"></div>
+  <div class="cell row-even ki-partial">
+    <div class="card r-user"><h3>Tilbakemelding</h3><p>Etter lansering, support, klager</p><div class="ai-note">↳ KI: sentiment-analyse, mønstre</div></div>
   </div>
 
   <!-- ═══ BACKEND-UTVIKLER ═══ -->
-  <div class="lane-label">
-    Backend-utvikler
-    <span class="role-tag tag-be">BE</span>
+  <div class="rl row-odd"><span class="rl-name">Backend-utvikler</span><span class="badge b-be">BE</span></div>
+  <div class="cell row-odd ki-partial">
+    <div class="card r-be"><h3>Teknisk innsikt</h3><p>Muligheter, begrensninger, integrasjoner</p><div class="ai-note">↳ KI: arkitekturforslag, teknologisammenligning</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-be ki-partial">
-      <h3>Teknisk innsikt</h3>
-      <p>Muligheter, begrensninger, integrasjoner</p>
-      <div class="ai-note">↳ KI: arkitekturforslag, teknologi-sammenligning</div>
-    </div>
+  <div class="cell row-odd empty"></div>
+  <div class="cell row-odd empty"></div>
+  <div class="cell row-odd proto ki-partial">
+    <div class="card r-be"><h3>Teknisk review ★</h3><p>Feasibility, API-design, estimering</p><div class="ai-note">↳ KI: genererer API-spec fra krav</div></div>
   </div>
-  <div class="cell empty"></div>
-  <div class="cell empty"></div>
-  <div class="cell proto">
-    <div class="activity r-be ki-partial">
-      <h3>Teknisk review ★</h3>
-      <p>Feasibility, API-design, estimering</p>
-      <div class="ai-note">↳ KI: genererer API-spec fra krav, estimatstøtte</div>
-    </div>
+  <div class="cell row-odd ki-replace">
+    <div class="card r-be"><h3>Backend-implementering</h3><p>API, logikk, database, integrasjoner</p><div class="ai-note">↳ KI erstatter: Copilot, kode fra spec, boilerplate</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-be ki-replace">
-      <h3>Backend-implementering</h3>
-      <p>API, forretningslogikk, database, integrasjoner</p>
-      <div class="ai-note">↳ KI erstatter: Copilot, kode fra spec, boilerplate</div>
-    </div>
+  <div class="cell row-odd ki-partial">
+    <div class="card r-be"><h3>Deploy og overvåking</h3><p>Produksjonssetting, logging</p><div class="ai-note">↳ KI: CI/CD-automatisering, logg-analyse</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-be ki-partial">
-      <h3>Deploy og overvåking</h3>
-      <p>Produksjonssetting, logging</p>
-      <div class="ai-note">↳ KI: CI/CD-automatisering, logg-analyse</div>
-    </div>
-  </div>
-  <div class="cell empty"></div>
+  <div class="cell row-odd empty"></div>
 
   <!-- ═══ TESTER / QA ═══ -->
-  <div class="lane-label">
-    Tester / QA
-    <span class="role-tag tag-qa">QA</span>
+  <div class="rl row-even"><span class="rl-name">Tester / QA</span><span class="badge b-qa">QA</span></div>
+  <div class="cell row-even empty"></div>
+  <div class="cell row-even empty"></div>
+  <div class="cell row-even empty"></div>
+  <div class="cell row-even proto ki-replace">
+    <div class="card r-qa"><h3>Testplan ★</h3><p>Testcaser, akseptansekriterier, WCAG</p><div class="ai-note">↳ KI erstatter: genererer testcaser fra spec</div></div>
   </div>
-  <div class="cell empty"></div>
-  <div class="cell empty"></div>
-  <div class="cell empty"></div>
-  <div class="cell proto">
-    <div class="activity r-qa ki-replace">
-      <h3>Testplan ★</h3>
-      <p>Testcaser, akseptansekriterier, WCAG</p>
-      <div class="ai-note">↳ KI erstatter: genererer testcaser fra designspec og krav</div>
-    </div>
+  <div class="cell row-even ki-partial">
+    <div class="card r-qa"><h3>Funksjonell testing</h3><p>Manuell gjennomgang, edge cases</p><div class="ai-note">↳ KI: automatiserte regresjonstester</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-qa ki-partial">
-      <h3>Funksjonell testing</h3>
-      <p>Manuell gjennomgang, edge cases</p>
-      <div class="ai-note">↳ KI: automatiserte regresjonstester</div>
-    </div>
+  <div class="cell row-even ki-replace">
+    <div class="card r-qa"><h3>WCAG og ytelse</h3><p>Tilgjengelighetstest, performance</p><div class="ai-note">↳ KI erstatter: automatisk WCAG-skanning, Lighthouse</div></div>
   </div>
-  <div class="cell">
-    <div class="activity r-qa ki-replace">
-      <h3>WCAG og ytelse</h3>
-      <p>Tilgjengelighetstest, performance</p>
-      <div class="ai-note">↳ KI erstatter: automatisk WCAG-skanning, Lighthouse</div>
-    </div>
-  </div>
-  <div class="cell empty"></div>
+  <div class="cell row-even empty"></div>
 
 </div><!-- /grid -->
+<p class="proto-note">★ Prototype-punkt (uke 5–6): prototypen distribueres samtidig til UX, frontend-designer, fagperson, bruker, backend og QA</p>
+</div><!-- /scroll-outer -->
 
-<p class="proto-label">★ Prototype-punkt (uke 5–6): prototypen distribueres samtidig til UX, frontend-designer, fagperson, bruker, backend og QA</p>
-</div><!-- /scroll-wrapper -->
-
-<div class="footer">
-  <p>
-    <strong>Om diagrammet:</strong>
-    Boksene med <strong style="color:#c00">rød hel kantlinje</strong> er aktiviteter der KI i dag kan ta over mesteparten av arbeidet.
-    Boksene med <strong style="color:#c00">stiplet rød kantlinje</strong> er aktiviteter der KI effektiviserer, men der mennesket fortsatt er viktig for kvalitet og dømmekraft.
-    Boksene uten markering krever menneskelig tilstedeværelse — særlig viktig for Husbanken der mange brukere er i sårbare livssituasjoner.
-    Skillet mellom <strong>frontend-designer</strong> (visuelt, komponenter, CSS) og <strong>backend-utvikler</strong> (API, logikk, integrasjoner) gjenspeiler at KI allerede i dag kan generere begge typer kode, men at backend-kode ofte krever mer domenespesifikk vurdering.
-  </p>
+<!-- Summary -->
+<div class="summary-wrap">
+  <div class="summary">
+    <div class="summary-head">Oppsummering — KI-potensial i prosessen</div>
+    <div class="summary-cols">
+      <div class="summary-col">
+        <h4><span class="s-dot" style="border:3px solid #c0392b"></span>KI kan erstatte</h4>
+        <ul>
+          <li>Syntese: personas og HMW</li>
+          <li>Mikrotekst og UX-kopi</li>
+          <li>Testcaser fra spec</li>
+          <li>Frontend-komponentkode</li>
+          <li>Backend-boilerplate</li>
+          <li>WCAG-skanning</li>
+        </ul>
+      </div>
+      <div class="summary-col">
+        <h4><span class="s-dot" style="border:2.5px dashed #c0392b"></span>KI effektiviserer</h4>
+        <ul>
+          <li>Brief-skriving og OKR</li>
+          <li>Transkribering av intervjuer</li>
+          <li>Wireframing (Figma AI, v0)</li>
+          <li>API-spec og estimering</li>
+          <li>Klarspråk og lovsjekk</li>
+          <li>Sentiment-analyse</li>
+        </ul>
+      </div>
+      <div class="summary-col">
+        <h4><span class="s-dot" style="border:1.5px solid #c9cfd4"></span>Menneske nødvendig</h4>
+        <ul>
+          <li>Ekte brukerintervjuer</li>
+          <li>Faglig domenekunnskap</li>
+          <li>Strategisk retning</li>
+          <li>Akseptansetest (PO)</li>
+          <li>Etisk vurdering</li>
+          <li>Kontekst og dømmekraft</li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </div>
 
-<script>
-  // Alternating row tint
-  const labels = document.querySelectorAll('.lane-label');
-  labels.forEach((label, i) => {
-    if (i % 2 === 1) {
-      let el = label;
-      const siblings = [];
-      siblings.push(el);
-      for (let j = 0; j < 7; j++) {
-        el = el.nextElementSibling;
-        if (el) siblings.push(el);
-      }
-      siblings.forEach(s => s.classList.add('row-tint-cell'));
-    }
-  });
+<!-- Footer -->
+<div class="footer">
+  <strong>Om diagrammet:</strong> Boksene med <strong>rød hel kantlinje</strong> er aktiviteter der KI i dag kan ta over mesteparten av arbeidet. Boksene med <strong>stiplet rød kantlinje</strong> er aktiviteter der KI effektiviserer, men der mennesket er avgjørende for kvalitet og faglig dømmekraft. Boksene uten markering krever menneskelig tilstedeværelse — særlig viktig for Husbanken der mange brukere er i sårbare livssituasjoner og fagkunnskap om regelverk er kritisk.
+</div>
 
-  // Apply tint via inline style instead
-  document.querySelectorAll('.lane-label').forEach((label, i) => {
-    if (i % 2 === 0) return;
-    const tint = 'rgba(0,0,0,0.035)';
-    label.style.background = '#e5e1db';
-    let el = label.nextElementSibling;
-    for (let j = 0; j < 7; j++) {
-      if (!el) break;
-      if (!el.classList.contains('proto')) {
-        el.style.background = el.classList.contains('empty')
-          ? 'repeating-linear-gradient(45deg,#eae7e1,#eae7e1 7px,#e2dfd9 7px,#e2dfd9 14px)'
-          : '#eae7e1';
-      }
-      el = el.nextElementSibling;
-    }
-  });
-</script>
 </body>
 </html>
